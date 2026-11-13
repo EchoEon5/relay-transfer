@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信息传输控制台</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>📡</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="titlebar">
+    <div class="brand">
+      <span class="logo">📡</span>
+      <span class="title">信息传输控制台</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="status">信息</button>
+      <button class="tab" data-tab="transfer">传输</button>
+      <button class="tab" data-tab="account">账号</button>
+    </nav>
+    <div class="tb-right">
+      <span class="pill" id="devState">待连接</span>
+      <select id="devSelect" class="select" title="目标设备"></select>
+      <button class="icon-btn" id="btnLogout" title="退出登录">⎋</button>
+    </div>
+  </header>
+
+  
+  <div class="main" id="pageTransfer" hidden>
+    <aside class="sidebar">
+      <div class="side-head">目标电脑</div>
+      <ul class="tree" id="diskTree"></ul>
+      <div class="side-head">快捷入口</div>
+      <ul class="tree" id="quickTree">
+        <li data-path="::userprofile"><span class="ico">👤</span>用户目录</li>
+        <li data-path="::desktop"><span class="ico">🖥️</span>桌面</li>
+        <li data-path="::downloads"><span class="ico">⬇️</span>下载</li>
+        <li data-path="::documents"><span class="ico">📄</span>文档</li>
+      </ul>
+    </aside>
+
+    <section class="content">
+      <div class="toolbar">
+        <button class="icon-btn" id="btnUp" title="上一级">↑</button>
+        <button class="icon-btn" id="btnHome" title="回到根目录">⌂</button>
+        <button class="icon-btn" id="btnRefresh" title="刷新">⟳</button>
+        <div class="crumbs" id="crumbs"></div>
+        <input class="search" id="filter" placeholder="在当前文件夹中筛选…">
+      </div>
+
+      <div class="table-wrap">
+        <table class="filetable">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="checkAll" title="全选"></th>
+              <th class="col-name">名称</th>
+              <th class="col-size">大小</th>
+              <th class="col-time">修改时间</th>
+              <th class="col-type">类型</th>
+            </tr>
+          </thead>
+          <tbody id="fileBody"></tbody>
+        </table>
+        <div class="empty" id="emptyHint">正在加载…</div>
+      </div>
+
+      <div class="statusbar">
+        <span id="selInfo">未选择内容</span>
+        <span class="grow"></span>
+        <span id="pathInfo" class="dim"></span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head">传输面板</div>
+
+      <div class="panel-block">
+        <div class="row-between">
+          <span class="lbl">目标设备</span>
+          <span class="val" id="pDev">—</span>
+        </div>
+        <div class="row-between">
+          <span class="lbl">连接状态</span>
+          <span class="val" id="pConn">—</span>
+        </div>
+        <div class="row-between">
+          <span class="lbl">已选内容</span>
+          <span class="val" id="pSel">—</span>
+        </div>
+      </div>
+
+      <button class="btn primary block" id="btnPush">开始传输</button>
+      <div class="btn-pair">
+        <button class="btn warn block" id="btnCancel" hidden>取消传输</button>
+        <button class="btn danger-ghost block" id="btnDisconnect" hidden>断开连接</button>
+      </div>
+      <div class="cancel-note" id="cancelNote" hidden></div>
+
+      <div class="panel-block">
+        <div class="row-between">
+          <span class="lbl" id="jobPhase">空闲</span>
+          <span class="val" id="jobPct">0%</span>
+        </div>
+        <div class="progress"><div class="bar" id="jobBar"></div></div>
+        <div class="row-between small">
+          <span id="jobSpeed">—</span>
+          <span id="jobEta">剩余 —</span>
+        </div>
+        <div class="row-between small">
+          <span id="jobBytes">—</span>
+          <span id="jobSkipped"></span>
+        </div>
+      </div>
+
+      <div class="panel-head sub">
+        <span>可下载内容</span>
+        <button class="link-mini" id="btnClearHist" title="只清空列表，不删除 OSS 文件">清空列表</button>
+      </div>
+      <div class="links" id="linkList">
+        <div class="empty small">传输完成后，这里会保留所有历史文件，不会因为新的传输而消失</div>
+      </div>
+    </aside>
+  </div>
+
+  
+  <div class="page" id="pageStatus">
+    <div class="status-wrap">
+      <div class="status-top">
+        <h2>服务器信息</h2>
+        <div class="status-actions">
+          <span class="dim small" id="sysUpdated">—</span>
+          <button class="btn" id="btnSysRefresh">刷新</button>
+        </div>
+      </div>
+      <div id="sysBody" class="sys-body">
+        <div class="empty">正在读取…</div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="page" id="pageAccount" hidden>
+    <div class="acct-wrap">
+      <h2>账号设置</h2>
+      <p class="dim small">修改后立即生效。改密码会让所有已登录的浏览器退出，需要重新登录。</p>
+
+      <div class="card">
+        <div class="field">
+          <label>当前用户名</label>
+          <div class="static" id="acctCurUser">—</div>
+        </div>
+        <div class="field">
+          <label for="acctUser">新用户名<span class="hint">留空表示不修改</span></label>
+          <input class="input" id="acctUser" autocomplete="off" placeholder="3-32 位，字母数字下划线">
+        </div>
+        <div class="field">
+          <label for="acctPwd">新密码<span class="hint">留空表示不修改</span></label>
+          <input class="input" id="acctPwd" type="password" autocomplete="new-password" placeholder="至少 12 位">
+        </div>
+        <div class="field">
+          <label for="acctPwd2">再输一次新密码</label>
+          <input class="input" id="acctPwd2" type="password" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="acctOld">当前密码<span class="hint">必填，用于确认身份</span></label>
+          <input class="input" id="acctOld" type="password" autocomplete="current-password">
+        </div>
+        <div class="acct-msg" id="acctMsg"></div>
+        <button class="btn primary" id="btnSaveAcct">保存修改</button>
+      </div>
+
+      <div class="card">
+        <div class="field">
+          <label>设备密钥<span class="hint">生成传输助手时需要填这个</span></label>
+          <div class="static mono" id="acctDevKey">—</div>
+        </div>
+        <p class="dim small">这个密钥写在目标电脑的 bat 里。如果泄露，别人可以冒充一台设备上线，但读不到你的文件。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if (location.protocol !== 'http:' && location.protocol !== 'https:') {
+  document.write('<script src="preview.js"><\/script>');
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>

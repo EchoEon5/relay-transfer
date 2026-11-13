@@ -1,0 +1,25 @@
+{
+  "name": "信息传输控制台",
+  "short_name": "信息传输",
+  "description": "跨公网大文件传输 · 浏览器控制端",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3f3f3",
+  "theme_color": "#0f6cbd",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
