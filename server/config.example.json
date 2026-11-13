@@ -1,0 +1,29 @@
+{
+  "_说明": "复制为 config.json 后修改；也可用环境变量 RELAY_PASSWORD / RELAY_DEVICE_KEY / OSS_AK / OSS_SK / OSS_BUCKET 覆盖",
+  "_说明2": "oss.scheme / oss.host_override 只在自建对象存储（MinIO 等）时需要；阿里云 OSS 保持 https + 留空即可",
+  "_说明3": "public_base 留空会自动按访问者请求的地址推断，换服务器/换端口都不用改；只有走反向代理或需要固定域名时才手填",
+
+  "listen": "0.0.0.0",
+  "port": 8080,
+
+  "username": "admin",
+  "password": "换成你自己的强密码",
+  "device_key": "换成你自己的设备密钥-建议32位随机串",
+
+  "session_hours": 12,
+  "max_fail": 5,
+  "lock_seconds": 900,
+
+  "public_base": "",
+
+  "oss": {
+    "endpoint": "oss-cn-hangzhou.aliyuncs.com",
+    "bucket": "你的bucket名",
+    "access_key_id": "LTAI...",
+    "access_key_secret": "....",
+    "scheme": "https",
+    "host_override": "",
+    "part_size": 67108864,
+    "download_expires": 86400
+  }
+}

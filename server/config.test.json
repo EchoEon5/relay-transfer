@@ -1,0 +1,22 @@
+{
+  "_说明": "本地全链路联调配置：OSS 指向 fake_oss，part_size 调小以便覆盖分片路径",
+  "listen": "0.0.0.0",
+  "port": 8081,
+  "username": "admin",
+  "password": "Test@12345",
+  "device_key": "local-dev-key-0001",
+  "session_hours": 12,
+  "max_fail": 5,
+  "lock_seconds": 900,
+  "public_base": "http://127.0.0.1:8081",
+  "oss": {
+    "endpoint": "127.0.0.1:9000",
+    "bucket": "test",
+    "access_key_id": "fake-ak",
+    "access_key_secret": "fake-sk",
+    "scheme": "http",
+    "host_override": "127.0.0.1:9000",
+    "part_size": 5242880,
+    "download_expires": 3600
+  }
+}
