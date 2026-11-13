@@ -1,0 +1,23 @@
+[Unit]
+Description=File Relay (跨公网大文件传输中继)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=relay
+Group=relay
+WorkingDirectory=/opt/server
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONIOENCODING=utf-8
+ExecStart=/usr/bin/python3 /opt/server/relay.py --config /opt/server/config.json
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/server
+
+[Install]
+WantedBy=multi-user.target
